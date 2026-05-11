@@ -1,5 +1,4 @@
 import json
-import os
 from collections.abc import AsyncIterator
 
 import httpx
@@ -55,7 +54,7 @@ async def _ollama_complete(base_url: str, model: str, prompt: str, temperature: 
 
 
 async def _openai_compatible_complete(config: dict, base_url: str, model: str, prompt: str, temperature: float) -> str:
-    api_key = config.get("api_key") or os.getenv("OPENAI_API_KEY", "")
+    api_key = config.get("api_key") or ""
     headers = {}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
@@ -98,7 +97,7 @@ async def _openai_compatible_stream(
     prompt: str,
     temperature: float,
 ) -> AsyncIterator[str]:
-    api_key = config.get("api_key") or os.getenv("OPENAI_API_KEY", "")
+    api_key = config.get("api_key") or ""
     headers = {}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"

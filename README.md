@@ -66,4 +66,3 @@ The project is organized by domain, not by layer. Each domain owns its router, s
 | -------- | ------- | ------- |
 | `HOST` | `127.0.0.1` | `scripts/prod.py` |
 | `PORT` | `3004` | `scripts/prod.py` |
-| `OPENAI_API_KEY` | unset | fallback for OpenAI-compatible providers |
