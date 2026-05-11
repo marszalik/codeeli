@@ -1,0 +1,19 @@
+[project]
+name = "codeeli"
+version = "0.1.0"
+description = "Deterministic code generation workflow for small local LLMs"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "mako==1.3.8",
+    "python-multipart==0.0.20",
+    "httpx==0.28.1",
+]
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.scripts]
+dev = "python scripts/dev.py"
+prod = "python scripts/prod.py"
