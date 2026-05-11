@@ -1,24 +1,41 @@
 :root {
   color-scheme: dark;
-  --bg: #111418;
-  --panel: #191e24;
-  --panel-2: #20262e;
-  --border: #343c47;
-  --text: #eef2f6;
-  --muted: #9aa7b5;
-  --accent: #3fb985;
-  --accent-2: #4c8dff;
+  --bg: #08111a;
+  --panel: #0f1d2b;
+  --panel-2: #14273b;
+  --border: rgba(140, 188, 234, 0.18);
+  --border-strong: rgba(140, 188, 234, 0.28);
+  --text: #edf3f8;
+  --muted: #9db0c2;
+  --accent: #f2b01d;
+  --accent-soft: #ffd163;
+  --accent-ink: #0e1520;
+  --accent-2: #6aa7ff;
 }
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500&display=swap");
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, #08111a 0%, #09131d 42%, #070e15 100%);
+  background-attachment: fixed;
   color: var(--text);
+  font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
 }
 
 .app-nav {
-  background: rgba(17, 20, 24, 0.94);
-  backdrop-filter: blur(10px);
+  background: rgba(7, 14, 21, 0.78);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.navbar-brand {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  color: var(--accent-soft) !important;
 }
 
 .brand-mark {
@@ -26,20 +43,27 @@ body {
   width: 2rem;
   height: 2rem;
   place-items: center;
-  border-radius: 0.35rem;
-  background: var(--accent);
-  color: #08120d;
+  border-radius: 0.4rem;
+  background: linear-gradient(180deg, #ffcb4f 0%, var(--accent) 100%);
+  color: var(--accent-ink);
   font-weight: 800;
+  box-shadow: 0 6px 18px rgba(242, 176, 29, 0.28);
 }
 
 .nav-pills .nav-link {
   color: var(--muted);
-  border-radius: 0.35rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+}
+
+.nav-pills .nav-link:hover {
+  color: var(--text);
 }
 
 .nav-pills .nav-link.active {
-  background: var(--panel-2);
-  color: var(--text);
+  background: rgba(242, 176, 29, 0.14);
+  color: var(--accent-soft);
+  border: 1px solid rgba(242, 176, 29, 0.32);
 }
 
 .page-grid {
@@ -65,13 +89,22 @@ body {
 .panel,
 .list-group-item,
 .empty-state {
-  background: var(--panel);
+  background: linear-gradient(180deg, rgba(18, 33, 49, 0.88), rgba(11, 22, 33, 0.94));
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 0.7rem;
 }
 
 .panel {
-  padding: 1rem;
+  padding: 1.1rem;
+}
+
+.section-head h1,
+.section-head h2,
+.panel h1,
+.panel h2 {
+  font-family: "IBM Plex Serif", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .section-head {
@@ -130,17 +163,17 @@ body {
 
 .form-control,
 .form-select {
-  background-color: #12161b;
+  background-color: rgba(7, 14, 21, 0.7);
   border-color: var(--border);
   color: var(--text);
 }
 
 .form-control:focus,
 .form-select:focus {
-  background-color: #12161b;
+  background-color: rgba(7, 14, 21, 0.7);
   border-color: var(--accent);
   color: var(--text);
-  box-shadow: 0 0 0 0.2rem rgba(63, 185, 133, 0.16);
+  box-shadow: 0 0 0 0.2rem rgba(242, 176, 29, 0.18);
 }
 
 .form-label {
@@ -158,10 +191,27 @@ body {
 .btn-primary {
   --bs-btn-bg: var(--accent);
   --bs-btn-border-color: var(--accent);
-  --bs-btn-color: #08120d;
-  --bs-btn-hover-bg: #55c896;
-  --bs-btn-hover-border-color: #55c896;
-  --bs-btn-hover-color: #08120d;
+  --bs-btn-color: var(--accent-ink);
+  --bs-btn-hover-bg: var(--accent-soft);
+  --bs-btn-hover-border-color: var(--accent-soft);
+  --bs-btn-hover-color: var(--accent-ink);
+  --bs-btn-active-bg: var(--accent-soft);
+  --bs-btn-active-border-color: var(--accent-soft);
+  --bs-btn-active-color: var(--accent-ink);
+  font-weight: 600;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(242, 176, 29, 0.22);
+}
+
+.btn-outline-secondary,
+.btn-secondary {
+  --bs-btn-color: var(--muted);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: var(--border);
+  --bs-btn-hover-color: var(--text);
+  --bs-btn-hover-bg: rgba(140, 188, 234, 0.08);
+  --bs-btn-hover-border-color: var(--border-strong);
+  border-radius: 999px;
 }
 
 .empty-state {
@@ -175,16 +225,16 @@ body {
   min-height: 24rem;
   max-height: 58vh;
   overflow: auto;
-  background: #0c0f12;
+  background: rgba(3, 8, 14, 0.72);
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
   padding: 0.8rem;
 }
 
 .terminal {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   font-size: 0.85rem;
-  color: #b8e3ca;
+  color: var(--accent-soft);
 }
 
 .terminal div {
@@ -192,9 +242,9 @@ body {
 }
 
 .task-item {
-  padding: 0.75rem;
+  padding: 0.8rem;
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
   background: var(--panel-2);
   margin-bottom: 0.75rem;
 }
@@ -204,7 +254,7 @@ body {
 }
 
 .task-item code {
-  color: #9cc3ff;
+  color: var(--accent-soft);
 }
 
 .file-tabs {
@@ -217,20 +267,26 @@ body {
 .file-tab {
   border: 1px solid var(--border);
   background: var(--panel-2);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.file-tab:hover {
   color: var(--text);
-  border-radius: 0.35rem;
-  padding: 0.35rem 0.55rem;
-  font-size: 0.85rem;
 }
 
 .file-tab.active {
-  border-color: var(--accent-2);
-  color: #d9e7ff;
+  border-color: rgba(242, 176, 29, 0.4);
+  background: rgba(242, 176, 29, 0.12);
+  color: var(--accent-soft);
 }
 
 .code-preview,
 .monospace {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   font-size: 0.85rem;
   white-space: pre-wrap;
 }
@@ -254,15 +310,15 @@ body {
   gap: 0.4rem;
   max-height: 78vh;
   overflow: auto;
-  background: #0c0f12;
+  background: rgba(3, 8, 14, 0.72);
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
   padding: 0.6rem;
 }
 
 .tl-entry {
   border: 1px solid var(--border);
-  border-radius: 0.35rem;
+  border-radius: 0.5rem;
   background: var(--panel-2);
   padding: 0;
 }
@@ -272,8 +328,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.45rem 0.65rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 0.5rem 0.7rem;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   font-size: 0.85rem;
   cursor: default;
 }
@@ -315,15 +371,15 @@ details.tl-entry[open] > summary.tl-head::before {
   color: #d6e1ee;
 }
 
-.tl-tag-log { background: #2a3340; color: #b8e3ca; }
-.tl-tag-prompt { background: #244670; color: #c8dcff; }
-.tl-tag-response { background: #553a1c; color: #ffdaa7; }
-.tl-tag-tasks { background: #2c4a35; color: #b8e3ca; }
+.tl-tag-log { background: rgba(140, 188, 234, 0.12); color: #cedaea; }
+.tl-tag-prompt { background: rgba(106, 167, 255, 0.14); color: #cfdfff; }
+.tl-tag-response { background: rgba(242, 176, 29, 0.16); color: var(--accent-soft); }
+.tl-tag-tasks { background: rgba(80, 200, 140, 0.14); color: #bcebcc; }
 .tl-tag-file-stream,
 .tl-tag-file-saved,
-.tl-tag-file { background: #3a2a55; color: #d8c4ff; }
-.tl-tag-error { background: #5a2330; color: #ffb8c2; }
-.tl-tag-done { background: #1f5a3a; color: #c5f5d8; }
+.tl-tag-file { background: rgba(180, 140, 255, 0.14); color: #e1ceff; }
+.tl-tag-error { background: rgba(248, 113, 113, 0.16); color: #ffb8c2; }
+.tl-tag-done { background: rgba(74, 222, 128, 0.16); color: #c5f5d8; }
 
 .tl-title {
   flex: 1;
@@ -341,13 +397,13 @@ details.tl-entry[open] > summary.tl-head::before {
 
 .tl-body {
   margin: 0;
-  padding: 0.65rem 0.75rem;
+  padding: 0.7rem 0.8rem;
   border-top: 1px solid var(--border);
-  background: #0a0d11;
+  background: rgba(3, 8, 14, 0.78);
   color: #e2e8ef;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   font-size: 0.8rem;
-  line-height: 1.45;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 60vh;
