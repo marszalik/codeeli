@@ -25,10 +25,10 @@ The dev server picks the first free port starting at 8000 and reloads on file ch
 
 ## Production
 
-A systemd unit is already installed at `/etc/systemd/system/codeeli.service` and an nginx site serves `app.codeeli.com`. The production entrypoint is `scripts/prod.py`; it reads:
+Run `scripts/prod.py` behind your own reverse proxy. The entrypoint reads:
 
-* `APP_GOOGLE_HOST` or `HOST` (default `127.0.0.1`)
-* `APP_GOOGLE_PORT` or `PORT` (default `3004`)
+* `HOST` (default `127.0.0.1`)
+* `PORT` (default `3004`)
 
 ## Architecture
 
@@ -47,6 +47,6 @@ The project is organized by domain, not by layer. Each domain owns its router, s
 
 | Variable | Default | Used in |
 | -------- | ------- | ------- |
-| `APP_GOOGLE_HOST` / `HOST` | `127.0.0.1` | `scripts/prod.py` |
-| `APP_GOOGLE_PORT` / `PORT` | `3004` | `scripts/prod.py` |
+| `HOST` | `127.0.0.1` | `scripts/prod.py` |
+| `PORT` | `3004` | `scripts/prod.py` |
 | `OPENAI_API_KEY` | unset | fallback for OpenAI-compatible providers |
