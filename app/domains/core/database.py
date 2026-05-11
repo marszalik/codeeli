@@ -85,33 +85,33 @@ CREATE TABLE IF NOT EXISTS generated_files (
 
 DEFAULT_RECIPES = [
     (
-        "Prosty Python",
-        "Używaj prostego Pythona. Preferuj standard library. Twórz małe, czytelne pliki. Zwracaj dokładnie żądaną treść.",
+        "Simple Python",
+        "Use plain Python. Prefer the standard library. Produce small, readable files. Return exactly the requested content.",
         "python main.py",
     ),
     (
-        "Prosty HTML i JavaScript",
-        "Użyj prostego HTML-a i JavaScriptu. Jeśli użytkownik nie prosi o osobne pliki, zrób jeden index.html.",
+        "Simple HTML and JavaScript",
+        "Use plain HTML and JavaScript. If the user does not ask for separate files, produce a single index.html.",
         "index.html",
     ),
     (
-        "Mały Python CLI",
-        "Zrób program w prostym Pythonie 3. Używaj tylko standard library. Najlepiej jeden plik. Bez markdown.",
+        "Small Python CLI",
+        "Build a program in plain Python 3. Use only the standard library. Prefer a single file. No markdown.",
         "python main.py",
     ),
     (
-        "Mały HTML JS",
-        "Zrób prostą stronę w jednym pliku index.html. Umieść CSS w <style>, a JavaScript w <script>. Osobne pliki twórz tylko gdy użytkownik o nie prosi. Bez frameworków. Bez markdown.",
+        "Small HTML JS",
+        "Build a simple page in a single index.html file. Put CSS inside <style> and JavaScript inside <script>. Only create separate files if the user explicitly asks. No frameworks. No markdown.",
         "index.html",
     ),
     (
-        "Mała gra HTML",
-        "Zrób grę w jednym pliku index.html. CSS w <style>, JavaScript w <script>. Trzymaj prosty stan gry. Po wygranej lub remisie zatrzymaj ruchy i nie nadpisuj komunikatu wyniku. Dodaj przycisk restart. Bez markdown.",
+        "Small HTML Game",
+        "Build a game in a single index.html file. CSS in <style>, JavaScript in <script>. Keep simple game state. On win or draw, stop moves and do not overwrite the result message. Add a restart button. No markdown.",
         "index.html",
     ),
     (
-        "Mały CRUD HTML",
-        "Zrób aplikację CRUD w jednym pliku index.html. CSS w <style>, JavaScript w <script>. Dane trzymaj w localStorage. Formularze obsługuj przez submit z event.preventDefault(). Dodaj listę, wyszukiwanie i usuwanie jeśli pasuje do zadania. Bez markdown.",
+        "Small CRUD HTML",
+        "Build a CRUD application in a single index.html file. CSS in <style>, JavaScript in <script>. Store data in localStorage. Handle forms with submit + event.preventDefault(). Add list, search, and delete if it fits the task. No markdown.",
         "index.html",
     ),
 ]
@@ -119,53 +119,53 @@ DEFAULT_RECIPES = [
 DEFAULT_INSTRUCTIONS = [
     (
         "tasks",
-        "Generowanie tasków",
-        """Opis programu:
+        "Task planning",
+        """Program description:
 {{program_prompt}}
 
-Recepta:
+Recipe:
 {{recipe}}
 
-Zaplanuj bardzo małą liczbę plików.
-Jeśli da się zrobić jeden plik, użyj jednego pliku.
-Jeśli to prosta strona HTML i użytkownik nie prosi o osobne pliki, zaplanuj tylko index.html.
-Zwróć tylko tablicę JSON.
+Plan a very small number of files.
+If it can be done with one file, use one file.
+If it is a simple HTML page and the user does not ask for separate files, plan only index.html.
+Return only a JSON array.
 Format:
-[{"name":"krótka nazwa","task_description":"pełny opis zawartości pliku","filename":"nazwa_pliku"}]
-Jeśli planujesz index.html oraz osobne pliki CSS/JS, opisz w tasku index.html, że ma linkować dokładnie te pliki.
-Nie używaj markdown. Nie dodawaj tekstu poza JSON.
-filename ma być ścieżką względną, bez .. i bez ścieżki absolutnej.""",
+[{"name":"short name","task_description":"full description of the file contents","filename":"file_name"}]
+If you plan index.html together with separate CSS/JS files, state in the index.html task that it must link exactly those files.
+Do not use markdown. Do not add any text outside the JSON.
+filename must be a relative path, without .. and without an absolute path.""",
     ),
     (
         "file",
-        "Generowanie pliku",
-        """Opis programu:
+        "File generation",
+        """Program description:
 {{program_prompt}}
 
-Recepta:
+Recipe:
 {{recipe}}
 
-Poprzednio wygenerowane pliki:
+Previously generated files:
 {{context}}
 
-Pełny plan plików:
+Full file plan:
 {{plan}}
 
 Task:
 {{task_description}}
 
-Docelowa ścieżka pliku:
+Target file path:
 {{filename}}
 
-Napisz kompletną treść tego jednego pliku.
-Jeśli ten plik ma odwoływać się do innych plików z planu, użyj dokładnych nazw z planu.
-Nie kopiuj kodu z innych plików, jeśli plan przewiduje osobny plik.
-Jeśli piszesz JavaScript, użyj dokładnych id, klas i nazw funkcji z HTML.
-Jeśli HTML ma onclick="nazwa()", funkcja nazwa musi być dostępna jako window.nazwa.
-Jeśli używasz formularza, obsłuż submit z event.preventDefault() albo ustaw przyciski akcji jako type="button".
-Zwróć tylko kod pliku.
-Pierwszy znak odpowiedzi ma być pierwszym znakiem pliku.
-Nie używaj markdown. Nie dodawaj objaśnień.""",
+Write the full contents of this single file.
+If this file references other files from the plan, use the exact names from the plan.
+Do not copy code from other files when the plan calls for a separate file.
+If you write JavaScript, use the exact ids, classes, and function names from the HTML.
+If the HTML has onclick="name()", the function name must be available as window.name.
+If you use a form, handle submit with event.preventDefault() or set action buttons to type="button".
+Return only the file code.
+The first character of the response must be the first character of the file.
+Do not use markdown. Do not add explanations.""",
     ),
 ]
 

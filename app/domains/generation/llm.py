@@ -9,7 +9,7 @@ def _messages(prompt: str) -> list[dict]:
     return [
         {
             "role": "system",
-            "content": "Jesteś precyzyjnym generatorem kodu. Odpowiadasz dokładnie w wymaganym formacie.",
+            "content": "You are a precise code generator. You answer exactly in the required format.",
         },
         {"role": "user", "content": prompt},
     ]

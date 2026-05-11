@@ -47,10 +47,10 @@ function setupAiSettings() {
     // pre-flight: warn early if api_key missing for providers that need it
     const prov = provider.value;
     if ((prov === "litellm" || prov === "openai") && !apiKey.value.trim()) {
-      setHelp(`Dla ${prov} potrzebny jest API key — wpisz go w polu wyżej i kliknij Pobierz ponownie.`, "error");
+      setHelp(`${prov} requires an API key — enter it in the field above and click Fetch again.`, "error");
       return;
     }
-    setHelp("Pobieram modele...", "info");
+    setHelp("Fetching models...", "info");
     modelSelect.classList.add("d-none");
     const params = new URLSearchParams({
       provider: prov,
@@ -62,7 +62,7 @@ function setupAiSettings() {
       const response = await fetch(`/ai-settings/models?${params.toString()}`);
       payload = await response.json();
     } catch (err) {
-      setHelp(`Błąd sieci: ${err.message}`, "error");
+      setHelp(`Network error: ${err.message}`, "error");
       return;
     }
     modelSelect.innerHTML = "";
@@ -75,9 +75,9 @@ function setupAiSettings() {
       }
       modelInput.value = payload.models[0];
       modelSelect.classList.remove("d-none");
-      setHelp(`Znaleziono modeli: ${payload.models.length}. Wybrano pierwszy — możesz zmienić w liście niżej.`, "ok");
+      setHelp(`Found models: ${payload.models.length}. First one selected — you can pick another in the list below.`, "ok");
     } else {
-      setHelp(payload.error || "Nie znaleziono modeli. Wpisz nazwę ręcznie.", "error");
+      setHelp(payload.error || "No models found. Enter the name manually.", "error");
     }
   });
 }
@@ -155,7 +155,7 @@ function setupGeneration() {
     const block = addBlock({
       kind: "file-stream",
       tagText: "file",
-      title: `Pisanie pliku: ${filename}`,
+      title: `Writing file: ${filename}`,
       body: "",
       openByDefault: true,
     });
@@ -175,16 +175,16 @@ function setupGeneration() {
     if (block) {
       block.pre.textContent = content;
       const meta = block.details.querySelector(".tl-meta");
-      if (meta) meta.textContent = `${content.length} znaków · zapisano`;
+      if (meta) meta.textContent = `${content.length} chars · saved`;
       const titleEl = block.details.querySelector(".tl-title");
-      if (titleEl) titleEl.textContent = `Zapisano plik: ${filename}`;
+      if (titleEl) titleEl.textContent = `Saved file: ${filename}`;
       streamingFiles.delete(filename);
     } else {
       addBlock({
         kind: "file-saved",
         tagText: "file",
-        title: `Zapisano plik: ${filename}`,
-        meta: `${content.length} znaków`,
+        title: `Saved file: ${filename}`,
+        meta: `${content.length} chars`,
         body: content,
       });
     }
@@ -194,7 +194,7 @@ function setupGeneration() {
     const lines = tasks.map((t, i) => `${i + 1}. [${t.filename}] ${t.name}\n    ${t.task_description}`).join("\n\n");
     addBlock({
       kind: "tasks",
-      title: `Plan plików (${tasks.length})`,
+      title: `File plan (${tasks.length})`,
       body: lines,
       openByDefault: true,
     });
@@ -207,7 +207,7 @@ function setupGeneration() {
     addBlock({
       kind: "prompt",
       title: titleBits.join(" · "),
-      meta: `${(data.content || "").length} znaków`,
+      meta: `${(data.content || "").length} chars`,
       body: data.content || "",
     });
   }
@@ -215,8 +215,8 @@ function setupGeneration() {
   function renderTasksRaw(data) {
     addBlock({
       kind: "response",
-      title: `Surowa odpowiedź modelu (plan, próba ${data.attempt})`,
-      meta: `${(data.content || "").length} znaków`,
+      title: `Raw model response (plan, attempt ${data.attempt})`,
+      meta: `${(data.content || "").length} chars`,
       body: data.content || "",
     });
   }
@@ -237,9 +237,9 @@ function setupGeneration() {
     if (!stateNode || !stateNode.textContent.trim()) return;
     const state = JSON.parse(stateNode.textContent);
     if (!state.run) return;
-    addLog(`Ostatni run: ${state.run.status}`, "log");
+    addLog(`Last run: ${state.run.status}`, "log");
     if (state.run.created_at) addLog(`Start: ${state.run.created_at}`, "log");
-    if (state.run.finished_at) addLog(`Koniec: ${state.run.finished_at}`, "log");
+    if (state.run.finished_at) addLog(`End: ${state.run.finished_at}`, "log");
     if (state.run.log) {
       for (const line of state.run.log.split("\n").filter(Boolean)) addLog(line, "log");
     }
@@ -249,8 +249,8 @@ function setupGeneration() {
         addBlock({
           kind: "file-saved",
           tagText: "file",
-          title: `Plik: ${f.filename}`,
-          meta: `${(f.content || "").length} znaków`,
+          title: `File: ${f.filename}`,
+          meta: `${(f.content || "").length} chars`,
           body: f.content || "",
         });
       }
@@ -289,9 +289,9 @@ function setupGeneration() {
         else if (event === "file_delta") appendToStreamingFile(data.filename, data.content);
         else if (event === "file") finalizeFile(data.filename, data.content);
         else if (event === "done") {
-          addLog(`${data.message} Katalog: ${data.workspace_dir}`, "done");
+          addLog(`${data.message} Directory: ${data.workspace_dir}`, "done");
           if (launchButton) launchButton.classList.remove("d-none");
-        } else if (event === "error") addLog(`Błąd: ${data.message}`, "error");
+        } else if (event === "error") addLog(`Error: ${data.message}`, "error");
       }
     }
   }
@@ -305,20 +305,20 @@ function setupGeneration() {
       if (payload.url) {
         window.open(payload.url, "_blank", "noopener");
       } else {
-        addLog(`Błąd uruchamiania: ${payload.error || "brak URL"}`, "error");
+        addLog(`Launch error: ${payload.error || "no URL"}`, "error");
       }
     });
   }
 
   button.addEventListener("click", async () => {
     if (!prompt.value.trim()) {
-      addLog("Wpisz opis programu przed generowaniem.", "error");
+      addLog("Enter a program description before generating.", "error");
       return;
     }
     clearTimeline();
     if (launchButton) launchButton.classList.add("d-none");
     button.disabled = true;
-    addLog("Start generowania.", "log");
+    addLog("Generation started.", "log");
     const body = new URLSearchParams({ prompt: prompt.value });
     try {
       const response = await fetch(`/generation/projects/${button.dataset.generateProject}`, {
@@ -328,7 +328,7 @@ function setupGeneration() {
       });
       await handleSse(response);
     } catch (error) {
-      addLog(`Błąd połączenia: ${error.message}`, "error");
+      addLog(`Connection error: ${error.message}`, "error");
     } finally {
       button.disabled = false;
     }

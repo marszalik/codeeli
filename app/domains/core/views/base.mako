@@ -13,7 +13,7 @@ def asset_v(name: str) -> int:
         return int(time.time())
 %>
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,9 +29,9 @@ def asset_v(name: str) -> int:
         <span>Codeeli</span>
       </a>
       <div class="navbar-nav nav-pills gap-1">
-        <a class="nav-link ${'active' if active == 'projects' else ''}" href="/projects">Projekty</a>
-        <a class="nav-link ${'active' if active == 'recipes' else ''}" href="/recipes">Recepty</a>
-        <a class="nav-link ${'active' if active == 'instructions' else ''}" href="/instructions">Instrukcje</a>
+        <a class="nav-link ${'active' if active == 'projects' else ''}" href="/projects">Projects</a>
+        <a class="nav-link ${'active' if active == 'recipes' else ''}" href="/recipes">Recipes</a>
+        <a class="nav-link ${'active' if active == 'instructions' else ''}" href="/instructions">Instructions</a>
         <a class="nav-link ${'active' if active == 'ai' else ''}" href="/ai-settings">AI</a>
       </div>
     </div>

@@ -1,32 +1,32 @@
 # General Architecture
 
-Ten dokument opisuje aktualny układ aplikacji oraz konwencje, których należy się trzymać przy dalszym rozwoju projektu.
+This document describes the current layout of the application and the conventions to follow as the project evolves.
 
 ## Stack
 
-* FastAPI odpowiada za routing HTTP i API
-* Mako renderuje widoki HTML po stronie serwera
-* SQLite przechowuje ustawienia aplikacji oraz manualny order elementów
+* FastAPI handles HTTP routing and the API
+* Mako renders HTML views on the server side
+* SQLite stores application settings and the manual ordering of elements
 
-## Główna zasada
+## Core principle
 
-Najważniejsza zasada: **projekt jest organizowany domenowo, a nie warstwowo**.
-Kod związany z jednym obszarem funkcjonalnym trzymamy razem:
+The most important rule: **the project is organized by domain, not by layer**.
+Code related to a single functional area is kept together:
 
 * routing
-* logika domenowa
-* schematy danych
-* widoki Mako specyficzne dla tej domeny
+* domain logic
+* data schemas
+* Mako views specific to that domain
 
-Nie używamy globalnych katalogów typu:
+We do not use global directories like:
 
 * `routers/`
 * `services/`
 * `templates/`
 
-dla całej aplikacji.
+for the whole application.
 
-## Struktura katalogów
+## Directory structure
 
 ```
 app/
@@ -66,106 +66,106 @@ app/
 
 ## app/domains/core
 
-Kod wspólny dla całej aplikacji.
-Zawiera:
+Code shared across the whole application.
+Contains:
 
-* `config.py` – ustawienia i ścieżki runtime
-* `templates.py` – konfiguracja Mako (lookup, renderowanie)
-* `views/` – widoki współdzielone (np. `base.mako`)
-* `static/` – zasoby współdzielone
+* `config.py` – settings and runtime paths
+* `templates.py` – Mako configuration (lookup, rendering)
+* `views/` – shared views (e.g. `base.mako`)
+* `static/` – shared assets
 
-To miejsce jest dla rzeczy frameworkowych i współdzielonych, **nie dla logiki biznesowej**.
+This place is for framework and shared concerns, **not for business logic**.
 
-## Struktura domeny
+## Domain structure
 
-Każda domena powinna zawierać:
+Every domain should contain:
 
-* `router.py` – mapowanie HTTP → operacje domenowe
-* `service.py` – logika biznesowa i operacje na danych
-* `repository.py` – dostęp do danych (np. SQLite)
-* `schemas.py` – modele danych (request/response)
-* `views/` – widoki Mako specyficzne dla domeny
-* `static/` – CSS/JS specyficzne dla domeny
+* `router.py` – mapping HTTP → domain operations
+* `service.py` – business logic and data operations
+* `repository.py` – data access (e.g. SQLite)
+* `schemas.py` – data models (request/response)
+* `views/` – Mako views specific to the domain
+* `static/` – CSS/JS specific to the domain
 
-## Widoki (Mako)
+## Views (Mako)
 
-Widoki są przypisane do domen.
+Views are scoped to domains.
 
-### Reguły:
+### Rules:
 
-* widok specyficzny → `app/domains/<domain>/views/`
-* widok współdzielony → `app/domains/core/views/`
+* domain-specific view → `app/domains/<domain>/views/`
+* shared view → `app/domains/core/views/`
 
-### Dlaczego:
+### Why:
 
-* łatwiejsze zrozumienie feature
-* routing + widok + logika są blisko siebie
-* lepsza współpraca z AI
-* łatwiejsze usuwanie i rozwijanie domen
-* brak „płaskiej listy templatek”
+* easier to reason about a feature
+* routing + view + logic stay close together
+* better AI collaboration
+* easier to delete and grow domains
+* no "flat list of templates"
 
 ## Routing
 
-Każda domena ma własny `router.py`.
-Router:
+Each domain owns its own `router.py`.
+The router:
 
-* powinien być **cienki**
-* mapuje HTTP → operacje domenowe
-* nie zawiera logiki biznesowej ani persistence
+* should be **thin**
+* maps HTTP → domain operations
+* contains no business logic or persistence
 
-Jeśli handler:
+If a handler:
 
-* operuje na plikach
-* robi SQL
-* waliduje reguły biznesowe
+* operates on files
+* runs SQL
+* validates business rules
 
-→ logika trafia do `service.py`
+→ that logic belongs in `service.py`.
 
 ## Frontend
 
-* statics domenowe trzymamy w domenach
-* rzeczy współdzielone przenosimy do `core/`
+* domain-scoped static assets live inside the domain
+* shared assets move to `core/`
 
-## Konwencje rozwoju
+## Development conventions
 
-Przy dodawaniu nowego feature:
+When adding a new feature:
 
-1. Określ domenę
-2. Jeśli feature jest lokalny → trzymaj wszystko w domenie
-3. Jeśli współdzielony → dopiero wtedy przenieś do `core/`
+1. Pick the domain
+2. If the feature is local → keep everything in the domain
+3. If it is shared → only then move it to `core/`
 
-### Zasady:
+### Rules:
 
-* nie wkładaj logiki biznesowej do Mako
-* nie wkładaj ciężkiej logiki do routerów
-* nie mieszaj SQL z warstwą HTTP
+* do not put business logic into Mako
+* do not put heavy logic into routers
+* do not mix SQL with the HTTP layer
 
-### Dodanie nowego ekranu:
+### Adding a new screen:
 
-1. wybierz domenę
-2. dodaj widok w `views/` tej domeny
-3. podepnij przez router tej domeny
+1. pick the domain
+2. add the view under that domain's `views/`
+3. wire it through that domain's router
 
-## Czego unikać
+## What to avoid
 
-* globalnego `templates/` dla wszystkich widoków
-* przerzucania całej logiki do `app.js`
-* bezpośredniego dostępu do SQLite z routerów
-* mieszania logiki auth z innymi domenami
-* tworzenia `utils.py` bez jasnej odpowiedzialności
+* a global `templates/` for every view
+* shoving all logic into `app.js`
+* direct SQLite access from routers
+* mixing auth logic with other domains
+* creating a `utils.py` with no clear responsibility
 
-## Content (treści)
+## Content
 
-* wszystkie treści są wstrzykiwane do Mako przez zmienne
-* treści są przechowywane w katalogu `content/`
-* format: **wyłącznie markdown**
+* all content is injected into Mako via variables
+* content is stored under the `content/` directory
+* format: **markdown only**
 
-### Struktura:
+### Structure:
 
-* identyfikatory odpowiadają ścieżkom plików
-* treści powtarzalne → osobne pliki
+* identifiers mirror file paths
+* repeated content → separate files
 
-Przykład:
+Example:
 
 ```
 content/  news/    news1.md    news2.md

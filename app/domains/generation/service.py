@@ -19,7 +19,7 @@ def safe_project_path(workspace_dir: str, filename: str) -> Path:
     root = Path(workspace_dir).expanduser().resolve()
     target = (root / filename).resolve()
     if root not in target.parents and target != root:
-        raise GenerationError(f"Niebezpieczna ścieżka pliku: {filename}")
+        raise GenerationError(f"Unsafe file path: {filename}")
     return target
 
 
@@ -36,30 +36,30 @@ def parse_tasks(raw: str) -> list[dict]:
     text = extract_json_array(raw)
     payload = json.loads(text, strict=False)
     if not isinstance(payload, list) or not payload:
-        raise ValueError("Odpowiedź musi być niepustą tablicą JSON.")
+        raise ValueError("Response must be a non-empty JSON array.")
     tasks = []
     for item in payload:
         if not isinstance(item, dict):
-            raise ValueError("Każdy task musi być obiektem.")
+            raise ValueError("Each task must be an object.")
         name = str(item.get("name", "")).strip()
         description = str(item.get("task_description", "")).strip()
         filename = str(item.get("filename", "")).strip()
         if not name or not description or not filename:
-            raise ValueError("Task wymaga pól name, task_description, filename.")
+            raise ValueError("Task requires fields name, task_description, filename.")
         tasks.append({"name": name, "task_description": description, "filename": filename})
     return tasks
 
 
 def wants_separate_files(program_prompt: str) -> bool:
     text = program_prompt.lower()
-    markers = ["osobn", "oddziel", "separate", "wiele plik", "kilka plik", "style.css", "script.js"]
+    markers = ["separate", "multiple files", "several files", "style.css", "script.js"]
     return any(marker in text for marker in markers)
 
 
 def normalize_tasks(program_prompt: str, recipe: str, tasks: list[dict]) -> list[dict]:
     recipe_text = recipe.lower()
     html_filenames = {task["filename"].lower() for task in tasks}
-    recipe_prefers_single_html = "jednym pliku index.html" in recipe_text or "jeden index.html" in recipe_text
+    recipe_prefers_single_html = "single index.html" in recipe_text or "one index.html" in recipe_text
     has_html_app = "index.html" in html_filenames or "html" in program_prompt.lower()
 
     if recipe_prefers_single_html and has_html_app and not wants_separate_files(program_prompt):
@@ -67,10 +67,10 @@ def normalize_tasks(program_prompt: str, recipe: str, tasks: list[dict]) -> list
             {
                 "name": "index.html",
                 "task_description": (
-                    "Stwórz kompletną stronę w jednym pliku index.html. "
-                    "Umieść HTML, CSS w tagu <style> i JavaScript w tagu <script>. "
-                    "Zaimplementuj cały opis programu bez osobnych plików. "
-                    f"Opis programu: {program_prompt}"
+                    "Build a complete page in a single index.html file. "
+                    "Put HTML, CSS inside a <style> tag, and JavaScript inside a <script> tag. "
+                    "Implement the entire program description without separate files. "
+                    f"Program description: {program_prompt}"
                 ),
                 "filename": "index.html",
             }
@@ -100,7 +100,7 @@ def sse(event: str, data: dict) -> str:
 def launch_url(project_id: int) -> str:
     project = get_project_details(project_id)
     if not project:
-        raise GenerationError("Nie znaleziono projektu.")
+        raise GenerationError("Project not found.")
     command = (project.get("recipe_run_command") or "").strip()
     workspace = Path(project["workspace_dir"]).expanduser()
 
@@ -110,14 +110,14 @@ def launch_url(project_id: int) -> str:
         elif (workspace / "main.py").exists():
             command = "python main.py"
         else:
-            raise GenerationError("Recepta nie ma pola uruchamiania.")
+            raise GenerationError("Recipe has no run command.")
 
     parts = shlex.split(command)
     first = parts[0] if parts else command
     if first.endswith(".html"):
         target = safe_project_path(project["workspace_dir"], first)
         if not target.exists():
-            raise GenerationError(f"Nie znaleziono pliku startowego: {first}")
+            raise GenerationError(f"Entry file not found: {first}")
         return f"/generation/projects/{project_id}/workspace/{first}"
 
     return f"/generation/projects/{project_id}/run"
@@ -126,19 +126,19 @@ def launch_url(project_id: int) -> str:
 async def run_project_command(project_id: int) -> str:
     project = get_project_details(project_id)
     if not project:
-        raise GenerationError("Nie znaleziono projektu.")
+        raise GenerationError("Project not found.")
     command = (project.get("recipe_run_command") or "").strip()
     if not command:
         command = "python main.py"
     parts = shlex.split(command)
     if not parts:
-        raise GenerationError("Pusta komenda uruchamiania.")
+        raise GenerationError("Empty run command.")
     if parts[0] == "python":
         parts[0] = sys.executable
 
     workspace = Path(project["workspace_dir"]).expanduser().resolve()
     if not workspace.exists():
-        raise GenerationError("Katalog roboczy projektu nie istnieje.")
+        raise GenerationError("Project workspace directory does not exist.")
 
     process = await asyncio.create_subprocess_exec(
         *parts,
@@ -151,18 +151,18 @@ async def run_project_command(project_id: int) -> str:
     except asyncio.TimeoutError:
         process.kill()
         await process.wait()
-        stdout, stderr = b"", b"Proces przekroczyl limit 20 sekund."
+        stdout, stderr = b"", b"Process exceeded the 20 second limit."
 
     output = stdout.decode("utf-8", errors="replace")
     errors = stderr.decode("utf-8", errors="replace")
     title = html.escape(project["name"])
     command_text = html.escape(command)
-    output_text = html.escape(output or "(brak stdout)")
-    error_text = html.escape(errors or "(brak stderr)")
+    output_text = html.escape(output or "(no stdout)")
+    error_text = html.escape(errors or "(no stderr)")
     code = process.returncode
 
     return f"""<!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -176,7 +176,7 @@ async def run_project_command(project_id: int) -> str:
 </head>
 <body>
   <h1>{title}</h1>
-  <div class="meta">Komenda: {command_text} · exit code: {code}</div>
+  <div class="meta">Command: {command_text} · exit code: {code}</div>
   <h2>stdout</h2>
   <pre>{output_text}</pre>
   <h2>stderr</h2>
@@ -188,10 +188,10 @@ async def run_project_command(project_id: int) -> str:
 async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[str]:
     project = get_project_details(project_id)
     if not project:
-        yield sse("error", {"message": "Nie znaleziono projektu."})
+        yield sse("error", {"message": "Project not found."})
         return
     if not project.get("model"):
-        yield sse("error", {"message": "Projekt nie ma konfiguracji modelu."})
+        yield sse("error", {"message": "Project has no model configuration."})
         return
 
     run_id = repository.create_run(project_id, user_prompt)
@@ -202,7 +202,7 @@ async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[s
         task_template = get_instruction_content("tasks")
         file_template = get_instruction_content("file")
 
-        yield sse("log", {"message": "Krok 1: proszę model o plan plików."})
+        yield sse("log", {"message": "Step 1: asking the model for a file plan."})
         tasks = None
         last_error = ""
         for attempt in range(1, 4):
@@ -215,7 +215,7 @@ async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[s
                 raw = await llm.complete(project, prompt)
             except Exception as exc:
                 last_error = str(exc)
-                yield sse("log", {"message": f"Model zwrócił błąd. Próba {attempt}/3: {last_error}"})
+                yield sse("log", {"message": f"Model returned an error. Attempt {attempt}/3: {last_error}"})
                 await asyncio.sleep(0.5)
                 continue
             yield sse("tasks_raw", {"attempt": attempt, "content": raw})
@@ -224,15 +224,15 @@ async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[s
                 break
             except Exception as exc:
                 last_error = str(exc)
-                yield sse("log", {"message": f"Plan nie jest poprawnym JSON-em. Próba {attempt}/3: {last_error}"})
+                yield sse("log", {"message": f"Plan is not valid JSON. Attempt {attempt}/3: {last_error}"})
                 await asyncio.sleep(0.2)
         if tasks is None:
-            raise GenerationError(f"Nie udało się uzyskać poprawnego planu: {last_error}")
+            raise GenerationError(f"Could not obtain a valid plan: {last_error}")
         normalized_tasks = normalize_tasks(user_prompt, recipe, tasks)
         if normalized_tasks != tasks:
             yield sse(
                 "log",
-                {"message": "Codeeli uprościło plan do jednego pliku zgodnie z receptą."},
+                {"message": "Codeeli simplified the plan to a single file per the recipe."},
             )
             tasks = normalized_tasks
 
@@ -248,13 +248,13 @@ async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[s
 
         for index, task in enumerate(tasks, start=1):
             filename = task["filename"]
-            yield sse("log", {"message": f"Krok 2.{index}: generuję {filename}."})
+            yield sse("log", {"message": f"Step 2.{index}: generating {filename}."})
             file_prompt = fill_placeholders(
                 file_template,
                 {
                     "program_prompt": user_prompt,
                     "recipe": recipe,
-                    "context": "\n\n".join(context_parts) or "Brak.",
+                    "context": "\n\n".join(context_parts) or "None.",
                     "plan": plan_text,
                     "task_description": task["task_description"],
                     "filename": filename,
@@ -274,9 +274,9 @@ async def generate_project(project_id: int, user_prompt: str) -> AsyncIterator[s
             context_parts.append(f"FILE: {filename}\n{content}")
             yield sse("file", {"filename": filename, "content": content})
 
-        logs.append("Generowanie zakończone.")
+        logs.append("Generation complete.")
         repository.finish_run(run_id, "success", "\n".join(logs))
-        yield sse("done", {"message": "Generowanie zakończone.", "workspace_dir": project["workspace_dir"]})
+        yield sse("done", {"message": "Generation complete.", "workspace_dir": project["workspace_dir"]})
     except Exception as exc:
         repository.finish_run(run_id, "error", str(exc))
         yield sse("error", {"message": str(exc)})

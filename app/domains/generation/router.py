@@ -36,7 +36,7 @@ def launch(project_id: int) -> JSONResponse:
 def workspace_file(project_id: int, filename: str) -> FileResponse:
     project = get_project_details(project_id)
     if not project:
-        raise RuntimeError("Nie znaleziono projektu.")
+        raise RuntimeError("Project not found.")
     target = safe_project_path(project["workspace_dir"], filename)
     return FileResponse(target)
 
