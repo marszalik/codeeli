@@ -2,6 +2,25 @@
 
 A small FastAPI + Mako + SQLite app for deterministic code generation with small local LLMs.
 
+## Install (Linux / macOS)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/marszalik/codeeli/main/install.sh | bash
+```
+
+Clones into `~/codeeli`, creates a virtualenv, installs dependencies. Requires `git` and `python3 >= 3.11`. Set `CODEELI_DIR` to install somewhere else.
+
+Then:
+
+```bash
+cd ~/codeeli
+.venv/bin/python scripts/dev.py
+```
+
+The dev server picks the first free port starting at 8000 and prints the URL.
+
+You also need a local model — Ollama (`ollama pull qwen2.5-coder:7b`) or any OpenAI-compatible server (LM Studio, vLLM, llama-server). Configure it in the AI tab inside the app.
+
 ## What it solves
 
 Small local models (Ollama, LiteLLM, modest OpenAI-compatible endpoints) are unreliable when asked to generate a whole project in one shot. Codeeli breaks that into a deterministic two-step workflow:
@@ -11,17 +30,15 @@ Small local models (Ollama, LiteLLM, modest OpenAI-compatible endpoints) are unr
 
 Recipes nudge the model toward small, predictable outputs (single-file HTML pages, tiny Python CLIs, etc.), and instructions are editable prompt templates that drive both steps.
 
-## Quick start
+## Manual install
 
 ```bash
-git clone <repo-url> app.codeeli
-cd app.codeeli
-python -m venv .venv
+git clone https://github.com/marszalik/codeeli.git
+cd codeeli
+python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python scripts/dev.py
 ```
-
-The dev server picks the first free port starting at 8000 and reloads on file changes.
 
 ## Production
 
